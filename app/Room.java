@@ -11,5 +11,5 @@ public class Room {
         this.price = price;
         this.isAvailable = isAvailable;
     }
-    // ... (Imagina los getters y setters aquí)
+    // ... (Imagina los getters y setters aquí)aa
 }
