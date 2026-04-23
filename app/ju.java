@@ -1,4 +1,4 @@
-public class Room {
+public class app {
     private Long id;
     private String type; // Ejemplo: "Suite", "Doble"
     private double price;
