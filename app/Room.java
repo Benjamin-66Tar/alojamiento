@@ -1,4 +1,4 @@
-public class app {
+public class Room {
     private Long id;
     private String type; // Ejemplo: "Suite", "Doble"
     private double price;
@@ -11,5 +11,5 @@ public class app {
         this.price = price;
         this.isAvailable = isAvailable;
     }
-    // ... (Imagina los getters y setters aquí)aaaa
+    // ... (Imagina los getters y setters aquí)aaaaaaaaaa
 }
