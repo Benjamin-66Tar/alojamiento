@@ -11,5 +11,5 @@ public class app {
         this.price = price;
         this.isAvailable = isAvailable;
     }
-    // ... (Imagina los getters y setters aquí)aa
+    // ... (Imagina los getters y setters aquí)aaaaa
 }
