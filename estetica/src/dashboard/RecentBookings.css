@@ -1,0 +1,192 @@
+.bookings-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+}
+
+.bookings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bookings-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.view-all {
+  color: var(--primary-color);
+  font-size: 13px;
+  font-weight: 600;
+  transition: var(--transition);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  padding: 0;
+}
+
+.view-all:hover {
+  color: var(--primary-dark);
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1.5fr 1.2fr 1fr;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1.5fr 1.2fr 1fr;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  transition: var(--transition);
+  align-items: center;
+}
+
+.table-row:hover {
+  background: var(--border-color);
+}
+
+.table-col-guest,
+.table-col-hotel,
+.table-col-dates,
+.table-col-status,
+.table-col-amount {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.guest-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.hotel-name-table {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.dates-range {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.status-badge.confirmada {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success-color);
+}
+
+.status-badge.pendiente {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--accent-color);
+}
+
+.amount {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1.2fr 1.5fr 1fr 1fr;
+  }
+
+  .table-col-dates {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .bookings-card {
+    padding: 16px;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .table-body {
+    gap: 12px;
+  }
+
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .table-col-guest,
+  .table-col-hotel,
+  .table-col-dates,
+  .table-col-status,
+  .table-col-amount {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    align-items: center;
+  }
+
+  .table-col-guest::before,
+  .table-col-hotel::before,
+  .table-col-dates::before,
+  .table-col-status::before,
+  .table-col-amount::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-size: 11px;
+  }
+
+  .guest-name,
+  .hotel-name-table,
+  .dates-range,
+  .amount {
+    font-size: 12px;
+  }
+}
