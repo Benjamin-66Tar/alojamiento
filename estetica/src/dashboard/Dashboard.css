@@ -54,6 +54,38 @@
   box-shadow: var(--shadow-sm);
 }
 
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pdf-button {
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--success-color), #34d399);
+  color: white;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 10px 14px;
+  transition: var(--transition);
+}
+
+.pdf-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.pdf-status {
+  color: var(--success-color);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .period-btn {
   padding: 8px 16px;
   border: none;
@@ -96,6 +128,26 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   margin-bottom: 24px;
+}
+
+.session-panel {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.session-panel h2 {
+  margin: 10px 0 4px;
+  font-size: 20px;
+}
+
+.session-panel p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .role-card {
@@ -251,6 +303,15 @@
   .period-selector {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .dashboard-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .pdf-button {
+    width: 100%;
   }
 
   .period-btn {

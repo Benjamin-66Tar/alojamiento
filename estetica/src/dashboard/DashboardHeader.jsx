@@ -1,6 +1,11 @@
 import './DashboardHeader.css'
 
-export default function DashboardHeader({ onNavigateToHome, roleName = 'Administrador' }) {
+export default function DashboardHeader({
+  onNavigateToHome,
+  onLogout,
+  roleName = 'Administrador',
+  userName = 'Usuario',
+}) {
   return (
     <header className="dashboard-header">
       <div className="header-container">
@@ -13,8 +18,12 @@ export default function DashboardHeader({ onNavigateToHome, roleName = 'Administ
           <button className="nav-item" onClick={onNavigateToHome}>← Volver a Inicio</button>
           <div className="user-menu">
             <div className="user-avatar">👤</div>
-            <span className="user-name">{roleName}</span>
+            <span className="user-name">{userName}</span>
+            <span className="user-role">{roleName}</span>
           </div>
+          <button type="button" className="logout-button" onClick={onLogout}>
+            Salir
+          </button>
         </nav>
       </div>
     </header>

@@ -5,6 +5,7 @@ import StatsCards from './StatsCards'
 import RevenueChart from './RevenueChart'
 import RecentBookings from './RecentBookings'
 import HotelPerformance from './HotelPerformance'
+import { generateDashboardPdf } from '../utils/pdfReport'
 
 const roles = [
   {
@@ -114,17 +115,35 @@ const roleContent = {
   },
 }
 
-export default function Dashboard({ onNavigateToHome }) {
+export default function Dashboard({ currentUser, onNavigateToHome, onLogout }) {
   const [selectedPeriod, setSelectedPeriod] = useState('month')
-  const [selectedRoleId, setSelectedRoleId] = useState('super-admin')
+  const [selectedRoleId, setSelectedRoleId] = useState(currentUser?.roleId || 'super-admin')
+  const [pdfStatus, setPdfStatus] = useState('')
   const selectedRole = roles.find((role) => role.id === selectedRoleId) || roles[0]
   const content = roleContent[selectedRole.id]
   const isGuest = selectedRole.id === 'huesped'
   const isOperational = selectedRole.group === 'Operativo'
+  const canSwitchRoles = currentUser?.roleId === 'super-admin'
+
+  const handleGeneratePdf = () => {
+    generateDashboardPdf({
+      role: selectedRole,
+      content,
+      period: selectedPeriod,
+      user: currentUser,
+    })
+    setPdfStatus('PDF generado y descargado.')
+    window.setTimeout(() => setPdfStatus(''), 2500)
+  }
 
   return (
     <div className="dashboard">
-      <DashboardHeader onNavigateToHome={onNavigateToHome} roleName={selectedRole.name} />
+      <DashboardHeader
+        onNavigateToHome={onNavigateToHome}
+        onLogout={onLogout}
+        roleName={selectedRole.name}
+        userName={currentUser?.name}
+      />
 
       <div className="dashboard-content">
         <div className="dashboard-header-section">
@@ -133,45 +152,61 @@ export default function Dashboard({ onNavigateToHome }) {
             <h1>{content.headline}</h1>
             <p className="dashboard-summary">{content.summary}</p>
           </div>
-          <div className="period-selector" aria-label="Seleccionar periodo">
-            <button
-              type="button"
-              className={`period-btn ${selectedPeriod === 'week' ? 'active' : ''}`}
-              onClick={() => setSelectedPeriod('week')}
-            >
-              Esta semana
+          <div className="dashboard-actions">
+            <div className="period-selector" aria-label="Seleccionar periodo">
+              <button
+                type="button"
+                className={`period-btn ${selectedPeriod === 'week' ? 'active' : ''}`}
+                onClick={() => setSelectedPeriod('week')}
+              >
+                Esta semana
+              </button>
+              <button
+                type="button"
+                className={`period-btn ${selectedPeriod === 'month' ? 'active' : ''}`}
+                onClick={() => setSelectedPeriod('month')}
+              >
+                Este mes
+              </button>
+              <button
+                type="button"
+                className={`period-btn ${selectedPeriod === 'year' ? 'active' : ''}`}
+                onClick={() => setSelectedPeriod('year')}
+              >
+                Este ano
+              </button>
+            </div>
+            <button type="button" className="pdf-button" onClick={handleGeneratePdf}>
+              Generar PDF
             </button>
-            <button
-              type="button"
-              className={`period-btn ${selectedPeriod === 'month' ? 'active' : ''}`}
-              onClick={() => setSelectedPeriod('month')}
-            >
-              Este mes
-            </button>
-            <button
-              type="button"
-              className={`period-btn ${selectedPeriod === 'year' ? 'active' : ''}`}
-              onClick={() => setSelectedPeriod('year')}
-            >
-              Este año
-            </button>
+            {pdfStatus && <span className="pdf-status">{pdfStatus}</span>}
           </div>
         </div>
 
-        <section className="role-switcher" aria-label="Seleccionar rol">
-          {roles.map((role) => (
-            <button
-              type="button"
-              key={role.id}
-              className={`role-card ${selectedRole.id === role.id ? 'active' : ''}`}
-              onClick={() => setSelectedRoleId(role.id)}
-            >
-              <span className="role-group">{role.group}</span>
-              <strong>{role.name}</strong>
-              <span>{role.description}</span>
-            </button>
-          ))}
-        </section>
+        {canSwitchRoles ? (
+          <section className="role-switcher" aria-label="Seleccionar rol">
+            {roles.map((role) => (
+              <button
+                type="button"
+                key={role.id}
+                className={`role-card ${selectedRole.id === role.id ? 'active' : ''}`}
+                onClick={() => setSelectedRoleId(role.id)}
+              >
+                <span className="role-group">{role.group}</span>
+                <strong>{role.name}</strong>
+                <span>{role.description}</span>
+              </button>
+            ))}
+          </section>
+        ) : (
+          <section className="session-panel">
+            <div>
+              <span className="role-group">{selectedRole.group}</span>
+              <h2>{currentUser?.name}</h2>
+              <p>Sesion activa como {selectedRole.name}. Tus modulos se ajustan a este rol.</p>
+            </div>
+          </section>
+        )}
 
         <section className="access-panel">
           <div className="access-card">

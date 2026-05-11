@@ -1,6 +1,6 @@
 import './HotelCard.css'
 
-export default function HotelCard({ hotel }) {
+export default function HotelCard({ hotel, onBook }) {
   const {
     gradient,
     name,
@@ -53,7 +53,9 @@ export default function HotelCard({ hotel }) {
             <span className="price">${price.toLocaleString()}</span>
             <span className="per-night">/noche</span>
           </div>
-          <button className="btn-book">Ver Disponibilidad</button>
+          <button className="btn-book" onClick={() => onBook?.(hotel)}>
+            Reservar
+          </button>
         </div>
       </div>
     </div>

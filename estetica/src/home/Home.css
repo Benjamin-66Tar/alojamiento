@@ -84,6 +84,150 @@
   box-shadow: var(--shadow-md);
 }
 
+.nav-ghost-button {
+  padding: 8px 14px;
+  background: white;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  transition: var(--transition);
+  font-family: 'Poppins', sans-serif;
+}
+
+.nav-ghost-button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.nav-user {
+  max-width: 180px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reservation-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(31, 41, 55, 0.58);
+}
+
+.reservation-card {
+  width: min(540px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-xl);
+}
+
+.reservation-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.reservation-eyebrow {
+  margin: 0 0 4px;
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.reservation-heading h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.modal-close {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: white;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 10px;
+}
+
+.reservation-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.reservation-field input,
+.reservation-field select {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.reservation-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.reservation-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.reservation-total span {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.reservation-total strong {
+  color: var(--primary-color);
+  font-size: 22px;
+}
+
+.reservation-submit {
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  color: white;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 12px 16px;
+}
+
 /* Sección de hoteles */
 .hotels-section {
   flex: 1;
@@ -222,6 +366,14 @@
     width: 100%;
   }
 
+  .nav-ghost-button {
+    width: 100%;
+  }
+
+  .reservation-dates {
+    grid-template-columns: 1fr;
+  }
+
   .hotels-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 12px;
@@ -255,6 +407,11 @@
   }
 
   .nav-button {
+    display: none;
+  }
+
+  .nav-ghost-button,
+  .nav-user {
     display: none;
   }
 

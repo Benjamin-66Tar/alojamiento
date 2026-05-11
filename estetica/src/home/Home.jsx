@@ -4,6 +4,7 @@ import SearchBar from './SearchBar'
 import CategoryIcons from './CategoryIcons'
 import OfferSection from './OfferSection'
 import HotelCard from './HotelCard'
+import { generateGuestReservationPdf } from '../utils/pdfReport'
 
 // Datos de ejemplo de hoteles
 const hotelData = [
@@ -105,12 +106,84 @@ const hotelData = [
   },
 ]
 
-export default function Home({ onNavigateToDashboard }) {
+const reservationTypes = ['Flexible', 'No reembolsable', 'Ejecutiva', 'Familiar']
+
+function formatInputDate(date) {
+  return date.toISOString().split('T')[0]
+}
+
+function addDays(date, days) {
+  const nextDate = new Date(date)
+  nextDate.setDate(nextDate.getDate() + days)
+  return nextDate
+}
+
+function calculateNights(startDate, endDate) {
+  const start = new Date(`${startDate}T00:00:00`)
+  const end = new Date(`${endDate}T00:00:00`)
+  const diff = end.getTime() - start.getTime()
+  return Math.max(1, Math.ceil(diff / 86400000))
+}
+
+function createReservationNumber() {
+  return `RSV-${Date.now().toString().slice(-6)}`
+}
+
+export default function Home({ currentUser, onNavigateToDashboard, onLogout }) {
   const [searchParams, setSearchParams] = useState({})
+  const [selectedHotel, setSelectedHotel] = useState(null)
+  const [reservation, setReservation] = useState(() => {
+    const today = new Date()
+    return {
+      guestName: '',
+      checkIn: formatInputDate(today),
+      checkOut: formatInputDate(addDays(today, 2)),
+      reservationType: 'Flexible',
+    }
+  })
+  const canSeeDashboard = ['super-admin', 'gerente'].includes(currentUser?.roleId)
 
   const handleSearch = (params) => {
     setSearchParams(params)
+    setReservation((currentReservation) => ({
+      ...currentReservation,
+      checkIn: params.checkIn || currentReservation.checkIn,
+      checkOut: params.checkOut || currentReservation.checkOut,
+    }))
     console.log('Búsqueda realizada:', params)
+  }
+
+  const handleOpenReservation = (hotel) => {
+    setSelectedHotel(hotel)
+    setReservation((currentReservation) => ({
+      ...currentReservation,
+      guestName: currentUser?.roleId === 'huesped' ? currentUser.name : currentReservation.guestName,
+      checkIn: searchParams.checkIn || currentReservation.checkIn,
+      checkOut: searchParams.checkOut || currentReservation.checkOut,
+    }))
+  }
+
+  const handleConfirmReservation = (event) => {
+    event.preventDefault()
+
+    if (!selectedHotel) return
+
+    const nights = calculateNights(reservation.checkIn, reservation.checkOut)
+    const amountPaid = nights * selectedHotel.price
+    const reservationNumber = createReservationNumber()
+
+    generateGuestReservationPdf({
+      guestName: reservation.guestName,
+      reservationNumber,
+      checkIn: reservation.checkIn,
+      checkOut: reservation.checkOut,
+      amountPaid,
+      reservationType: reservation.reservationType,
+      hotelName: selectedHotel.name,
+      nights,
+    })
+
+    setSelectedHotel(null)
   }
 
   return (
@@ -127,7 +200,19 @@ export default function Home({ onNavigateToDashboard }) {
             <a href="#" className="nav-link">Hoteles</a>
             <a href="#" className="nav-link">Ofertas</a>
             <a href="#" className="nav-link">Contacto</a>
-            <button className="nav-button" onClick={onNavigateToDashboard}>📊 Dashboard</button>
+            {currentUser && (
+              <span className="nav-user">{currentUser.name}</span>
+            )}
+            {(!currentUser || canSeeDashboard) && (
+              <button className="nav-button" onClick={onNavigateToDashboard}>
+                {currentUser ? 'Dashboard' : 'Iniciar sesion'}
+              </button>
+            )}
+            {currentUser && (
+              <button className="nav-ghost-button" onClick={onLogout}>
+                Salir
+              </button>
+            )}
           </nav>
         </div>
       </header>
@@ -157,11 +242,82 @@ export default function Home({ onNavigateToDashboard }) {
                 hotel.name.toLowerCase().includes(searchParams.location.toLowerCase())
               )
               .map((hotel) => (
-                <HotelCard key={hotel.id} hotel={hotel} />
+                <HotelCard key={hotel.id} hotel={hotel} onBook={handleOpenReservation} />
               ))}
           </div>
         </div>
       </section>
+
+      {selectedHotel && (
+        <div className="reservation-modal" role="dialog" aria-modal="true" aria-labelledby="reservation-title">
+          <form className="reservation-card" onSubmit={handleConfirmReservation}>
+            <div className="reservation-heading">
+              <div>
+                <p className="reservation-eyebrow">Confirmar reservacion</p>
+                <h2 id="reservation-title">{selectedHotel.name}</h2>
+              </div>
+              <button type="button" className="modal-close" onClick={() => setSelectedHotel(null)}>
+                Cerrar
+              </button>
+            </div>
+
+            <label className="reservation-field">
+              <span>Nombre del huesped</span>
+              <input
+                type="text"
+                value={reservation.guestName}
+                onChange={(event) => setReservation({ ...reservation, guestName: event.target.value })}
+                required
+              />
+            </label>
+
+            <div className="reservation-dates">
+              <label className="reservation-field">
+                <span>Inicio de reservacion</span>
+                <input
+                  type="date"
+                  value={reservation.checkIn}
+                  onChange={(event) => setReservation({ ...reservation, checkIn: event.target.value })}
+                  required
+                />
+              </label>
+
+              <label className="reservation-field">
+                <span>Fin de reservacion</span>
+                <input
+                  type="date"
+                  value={reservation.checkOut}
+                  onChange={(event) => setReservation({ ...reservation, checkOut: event.target.value })}
+                  required
+                />
+              </label>
+            </div>
+
+            <label className="reservation-field">
+              <span>Tipo de reservacion</span>
+              <select
+                value={reservation.reservationType}
+                onChange={(event) => setReservation({ ...reservation, reservationType: event.target.value })}
+              >
+                {reservationTypes.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </label>
+
+            <div className="reservation-total">
+              <span>Monto pagado</span>
+              <strong>
+                ${(calculateNights(reservation.checkIn, reservation.checkOut) * selectedHotel.price).toLocaleString()}
+              </strong>
+            </div>
+
+            <button type="submit" className="reservation-submit">
+              Confirmar y generar PDF
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="footer">
