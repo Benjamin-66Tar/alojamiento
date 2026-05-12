@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel - Servicios y cuenta</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --primary: #4f46e5;
+        --primary-soft: #eef2ff;
+        --success: #059669;
+        --danger: #dc2626;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --bg: #f9fafb;
+        --card: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 44px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 16px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      }
+
+      .brand h1 {
+        margin: 0 0 4px;
+        font-size: 26px;
+      }
+
+      .brand p,
+      .summary {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .nav-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .btn {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: white;
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 700;
+        padding: 9px 12px;
+      }
+
+      .btn.primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn.success {
+        border-color: var(--success);
+        background: var(--success);
+        color: white;
+      }
+
+      .panel {
+        display: none;
+        margin-bottom: 20px;
+        padding: 18px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .panel.active {
+        display: block;
+      }
+
+      .panel h2,
+      .services-header h2 {
+        margin: 0 0 12px;
+        font-size: 22px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--bg);
+        padding: 10px;
+      }
+
+      .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .message {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .message.error {
+        color: var(--danger);
+      }
+
+      .message.success {
+        color: var(--success);
+      }
+
+      .profile-card {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .profile-item {
+        padding: 12px;
+        border-radius: 8px;
+        background: var(--bg);
+      }
+
+      .profile-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .services-header {
+        margin: 24px 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        min-height: 170px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .price {
+        width: fit-content;
+        padding: 7px 10px;
+        border-radius: 6px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      .state {
+        padding: 18px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      @media (max-width: 760px) {
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .nav-actions {
+          justify-content: stretch;
+          width: 100%;
+        }
+
+        .btn {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="topbar">
+        <div class="brand">
+          <h1>Hotel</h1>
+          <p>Servicios, cuenta de usuario y acceso administrativo.</p>
+        </div>
+        <nav class="nav-actions">
+          <button class="btn" id="show-login" type="button">Iniciar sesion</button>
+          <button class="btn" id="show-register" type="button">Registro</button>
+          <button class="btn" id="show-profile" type="button">Perfil</button>
+          <a class="btn success" id="dashboard-button" href="/dashboard.html" hidden>Dashboard</a>
+          <button class="btn" id="logout-button" type="button" hidden>Salir</button>
+        </nav>
+      </header>
+
+      <section class="panel" id="login-panel">
+        <h2>Inicio de sesion</h2>
+        <form id="login-form">
+          <div class="form-grid">
+            <label>
+              Correo
+              <input name="email" type="email" autocomplete="email" required />
+            </label>
+            <label>
+              Contrasena
+              <input name="password" type="password" autocomplete="current-password" required />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button class="btn primary" type="submit">Entrar</button>
+            <span class="message" id="login-message"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" id="register-panel">
+        <h2>Registro de huesped</h2>
+        <form id="register-form">
+          <div class="form-grid">
+            <label>
+              Nombre completo
+              <input name="fullName" type="text" autocomplete="name" required />
+            </label>
+            <label>
+              Correo
+              <input name="email" type="email" autocomplete="email" required />
+            </label>
+            <label>
+              Telefono
+              <input name="phone" type="tel" autocomplete="tel" />
+            </label>
+            <label>
+              Contrasena
+              <input name="password" type="password" autocomplete="new-password" minlength="6" required />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button class="btn primary" type="submit">Crear cuenta</button>
+            <span class="message" id="register-message"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" id="profile-panel">
+        <h2>Perfil</h2>
+        <div id="profile-content" class="profile-card"></div>
+      </section>
+
+      <section>
+        <div class="services-header">
+          <h2>Servicios del hotel</h2>
+          <p class="summary">Servicios cargados desde PostgreSQL por medio del backend Express.</p>
+        </div>
+
+        <div id="services" class="grid">
+          <div class="state">Cargando servicios...</div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const dashboardRoles = ['super-admin', 'gerente']
+      const servicesContainer = document.querySelector('#services')
+      const dashboardButton = document.querySelector('#dashboard-button')
+      const logoutButton = document.querySelector('#logout-button')
+      const profileContent = document.querySelector('#profile-content')
+      const panels = {
+        login: document.querySelector('#login-panel'),
+        register: document.querySelector('#register-panel'),
+        profile: document.querySelector('#profile-panel'),
+      }
+
+      function getCurrentUser() {
+        try {
+          return JSON.parse(localStorage.getItem('hotel_user'))
+        } catch {
+          return null
+        }
+      }
+
+      function setCurrentUser(user) {
+        localStorage.setItem('hotel_user', JSON.stringify(user))
+        renderSession()
+      }
+
+      function clearCurrentUser() {
+        localStorage.removeItem('hotel_user')
+        renderSession()
+      }
+
+      function showPanel(name) {
+        Object.entries(panels).forEach(([panelName, panel]) => {
+          panel.classList.toggle('active', panelName === name)
+        })
+      }
+
+      function formatPrice(price) {
+        const value = Number(price)
+        return value === 0 ? 'Incluido' : `$${value.toFixed(2)}`
+      }
+
+      function setMessage(elementId, message, type = '') {
+        const element = document.querySelector(elementId)
+        element.textContent = message
+        element.className = `message ${type}`
+      }
+
+      function renderSession() {
+        const user = getCurrentUser()
+        const canAccessDashboard = dashboardRoles.includes(user?.role_id)
+
+        dashboardButton.hidden = !canAccessDashboard
+        logoutButton.hidden = !user
+
+        if (!user) {
+          profileContent.innerHTML = '<div class="state">Inicia sesion para ver tu perfil.</div>'
+          return
+        }
+
+        profileContent.innerHTML = `
+          <div class="profile-item"><span>Nombre</span>${user.full_name}</div>
+          <div class="profile-item"><span>Correo</span>${user.email}</div>
+          <div class="profile-item"><span>Telefono</span>${user.phone || 'Sin telefono'}</div>
+          <div class="profile-item"><span>Rol</span>${user.role_name}</div>
+        `
+      }
+
+      async function loadServices() {
+        try {
+          const response = await fetch('/api/services')
+          if (!response.ok) throw new Error('No se pudieron cargar los servicios.')
+
+          const services = await response.json()
+          servicesContainer.innerHTML = services
+            .map(
+              (service) => `
+                <article class="card">
+                  <div>
+                    <h3>${service.name}</h3>
+                    <p>${service.summary}</p>
+                  </div>
+                  <span class="price">${formatPrice(service.price)}</span>
+                </article>
+              `
+            )
+            .join('')
+        } catch (error) {
+          servicesContainer.innerHTML = `<div class="state">${error.message}</div>`
+        }
+      }
+
+      document.querySelector('#show-login').addEventListener('click', () => showPanel('login'))
+      document.querySelector('#show-register').addEventListener('click', () => showPanel('register'))
+      document.querySelector('#show-profile').addEventListener('click', () => showPanel('profile'))
+      logoutButton.addEventListener('click', clearCurrentUser)
+
+      document.querySelector('#login-form').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const formData = new FormData(event.currentTarget)
+
+        try {
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(formData)),
+          })
+          const data = await response.json()
+
+          if (!response.ok) throw new Error(data.message)
+
+          setCurrentUser(data)
+          setMessage('#login-message', 'Sesion iniciada.', 'success')
+          showPanel('profile')
+        } catch (error) {
+          setMessage('#login-message', error.message, 'error')
+        }
+      })
+
+      document.querySelector('#register-form').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const formData = new FormData(event.currentTarget)
+
+        try {
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(formData)),
+          })
+          const data = await response.json()
+
+          if (!response.ok) throw new Error(data.message)
+
+          setCurrentUser(data)
+          setMessage('#register-message', 'Cuenta creada.', 'success')
+          showPanel('profile')
+        } catch (error) {
+          setMessage('#register-message', error.message, 'error')
+        }
+      })
+
+      renderSession()
+      loadServices()
+    </script>
+  </body>
+</html>

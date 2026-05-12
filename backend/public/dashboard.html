@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f9fafb;
+        color: #1f2937;
+      }
+
+      main {
+        width: min(980px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 40px 0;
+      }
+
+      .panel {
+        padding: 24px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+      }
+
+      p {
+        color: #6b7280;
+      }
+
+      a {
+        display: inline-block;
+        margin-top: 16px;
+        color: #4f46e5;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel" id="content"></section>
+    </main>
+
+    <script>
+      const dashboardRoles = ['super-admin', 'gerente']
+      const content = document.querySelector('#content')
+
+      function getCurrentUser() {
+        try {
+          return JSON.parse(localStorage.getItem('hotel_user'))
+        } catch {
+          return null
+        }
+      }
+
+      const user = getCurrentUser()
+
+      if (!dashboardRoles.includes(user?.role_id)) {
+        content.innerHTML = `
+          <h1>Acceso restringido</h1>
+          <p>Solo gerentes y administradores pueden ver el dashboard.</p>
+          <a href="/servicios.html">Volver a servicios</a>
+        `
+      } else {
+        content.innerHTML = `
+          <h1>Dashboard administrativo</h1>
+          <p>Bienvenido, ${user.full_name}. Tu rol actual es ${user.role_name}.</p>
+          <p>Este espacio queda listo para metricas, reservas, reportes y administracion.</p>
+          <a href="/servicios.html">Volver a servicios</a>
+        `
+      }
+    </script>
+  </body>
+</html>

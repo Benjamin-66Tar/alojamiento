@@ -1,0 +1,116 @@
+.profile-page {
+  min-height: 100vh;
+  padding: 32px 20px;
+  background: var(--bg-secondary);
+}
+
+.profile-shell {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  padding: 28px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.profile-eyebrow {
+  margin: 0 0 6px;
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.profile-header h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.profile-header p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-actions button {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: white;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 12px;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.profile-grid article,
+.profile-state,
+.profile-note {
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.profile-grid span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.profile-grid strong {
+  color: var(--text-primary);
+  font-size: 16px;
+}
+
+.profile-state {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.profile-state.error {
+  color: var(--danger-color);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.profile-note {
+  margin: 18px 0 0;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.profile-note.success {
+  color: var(--success-color);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+@media (max-width: 720px) {
+  .profile-header {
+    flex-direction: column;
+  }
+}

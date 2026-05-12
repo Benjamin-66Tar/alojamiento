@@ -1,23 +1,40 @@
 import { useState } from 'react'
 import './Login.css'
-import { authenticateUser, demoUsers } from './users'
+import { loginUser, registerUser } from '../api/client'
 
 export default function Login({ onLogin, onBack }) {
-  const [email, setEmail] = useState('admin@hotel.com')
-  const [password, setPassword] = useState('admin123')
+  const [mode, setMode] = useState('login')
+  const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    password: '',
+  })
+  const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
 
-  const handleSubmit = (event) => {
+  const isRegister = mode === 'register'
+
+  const updateField = (field, value) => {
+    setForm((currentForm) => ({ ...currentForm, [field]: value }))
+  }
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
-
-    const user = authenticateUser(email, password)
-    if (!user) {
-      setError('Correo o contrasena incorrectos.')
-      return
-    }
-
+    setStatus('loading')
     setError('')
-    onLogin(user)
+
+    try {
+      const user = isRegister
+        ? await registerUser(form)
+        : await loginUser({ email: form.email, password: form.password })
+
+      onLogin(user)
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setStatus('idle')
+    }
   }
 
   return (
@@ -27,26 +44,78 @@ export default function Login({ onLogin, onBack }) {
           <button type="button" className="login-back" onClick={onBack}>
             Volver al inicio
           </button>
-          <p className="login-eyebrow">Acceso seguro</p>
-          <h1>Inicia sesion para entrar al panel</h1>
+          <p className="login-eyebrow">Cuenta de usuario</p>
+          <h1>{isRegister ? 'Crea tu cuenta de huesped' : 'Inicia sesion'}</h1>
           <p>
-            Cada usuario entra con su rol y permisos. El super admin puede revisar
-            todas las vistas; los demas usuarios quedan en su rol operativo.
+            El registro se guarda en PostgreSQL. Los huespedes ven su perfil; los
+            gerentes y administradores tambien ven el acceso al dashboard.
           </p>
         </div>
 
         <form className="login-card" onSubmit={handleSubmit}>
           <div>
-            <h2>Login de usuarios</h2>
-            <p>Usa una cuenta demo para probar el flujo completo.</p>
+            <h2>{isRegister ? 'Registro' : 'Inicio de sesion'}</h2>
+            <p>
+              {isRegister
+                ? 'Crea una cuenta nueva como huesped.'
+                : 'Entra con un usuario registrado en la base de datos.'}
+            </p>
           </div>
+
+          <div className="login-tabs" aria-label="Seleccionar accion">
+            <button
+              type="button"
+              className={mode === 'login' ? 'active' : ''}
+              onClick={() => {
+                setMode('login')
+                setError('')
+              }}
+            >
+              Iniciar sesion
+            </button>
+            <button
+              type="button"
+              className={mode === 'register' ? 'active' : ''}
+              onClick={() => {
+                setMode('register')
+                setError('')
+              }}
+            >
+              Registro
+            </button>
+          </div>
+
+          {isRegister && (
+            <>
+              <label className="field-group">
+                <span>Nombre completo</span>
+                <input
+                  type="text"
+                  value={form.fullName}
+                  onChange={(event) => updateField('fullName', event.target.value)}
+                  autoComplete="name"
+                  required
+                />
+              </label>
+
+              <label className="field-group">
+                <span>Telefono</span>
+                <input
+                  type="tel"
+                  value={form.phone}
+                  onChange={(event) => updateField('phone', event.target.value)}
+                  autoComplete="tel"
+                />
+              </label>
+            </>
+          )}
 
           <label className="field-group">
             <span>Correo</span>
             <input
               type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              value={form.email}
+              onChange={(event) => updateField('email', event.target.value)}
               autoComplete="email"
               required
             />
@@ -56,35 +125,23 @@ export default function Login({ onLogin, onBack }) {
             <span>Contrasena</span>
             <input
               type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
+              value={form.password}
+              onChange={(event) => updateField('password', event.target.value)}
+              autoComplete={isRegister ? 'new-password' : 'current-password'}
+              minLength={isRegister ? 6 : undefined}
               required
             />
           </label>
 
           {error && <p className="login-error">{error}</p>}
 
-          <button type="submit" className="login-submit">
-            Entrar al dashboard
+          <button type="submit" className="login-submit" disabled={status === 'loading'}>
+            {status === 'loading'
+              ? 'Procesando...'
+              : isRegister
+                ? 'Crear cuenta'
+                : 'Entrar'}
           </button>
-
-          <div className="demo-users">
-            <span>Cuentas demo</span>
-            {demoUsers.map((user) => (
-              <button
-                type="button"
-                key={user.id}
-                onClick={() => {
-                  setEmail(user.email)
-                  setPassword(user.password)
-                  setError('')
-                }}
-              >
-                {user.roleName}
-              </button>
-            ))}
-          </div>
         </form>
       </section>
     </main>

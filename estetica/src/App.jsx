@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import './App.css'
 import Home from './home/Home'
 import Dashboard from './dashboard/Dashboard'
 import Login from './auth/Login'
+import Profile from './profile/Profile'
 
 const SESSION_KEY = 'alojamiento_user_session'
 const DASHBOARD_ROLES = ['super-admin', 'gerente']
@@ -21,13 +22,21 @@ function readStoredUser() {
 
 function App() {
   const [currentUser, setCurrentUser] = useState(readStoredUser)
-  const [currentPage, setCurrentPage] = useState(currentUser ? 'dashboard' : 'home')
+  const [currentPage, setCurrentPage] = useState('home')
 
-  const handleLogin = (user) => {
+  const saveSession = useCallback((user) => {
     localStorage.setItem(SESSION_KEY, JSON.stringify(user))
     setCurrentUser(user)
-    setCurrentPage(canAccessDashboard(user) ? 'dashboard' : 'home')
+  }, [])
+
+  const handleLogin = (user) => {
+    saveSession(user)
+    setCurrentPage('profile')
   }
+
+  const handleProfileUpdate = useCallback((user) => {
+    saveSession(user)
+  }, [saveSession])
 
   const handleLogout = () => {
     localStorage.removeItem(SESSION_KEY)
@@ -45,6 +54,8 @@ function App() {
         <Home
           currentUser={currentUser}
           onNavigateToDashboard={handleDashboardNavigation}
+          onNavigateToLogin={() => setCurrentPage('login')}
+          onNavigateToProfile={() => setCurrentPage(currentUser ? 'profile' : 'login')}
           onLogout={handleLogout}
         />
       )}
@@ -59,6 +70,19 @@ function App() {
             currentUser={currentUser}
             onNavigateToHome={() => setCurrentPage('home')}
             onLogout={handleLogout}
+          />
+        ) : (
+          <Login onLogin={handleLogin} onBack={() => setCurrentPage('home')} />
+        )
+      )}
+
+      {currentPage === 'profile' && (
+        currentUser ? (
+          <Profile
+            currentUser={currentUser}
+            onBack={() => setCurrentPage('home')}
+            onLogout={handleLogout}
+            onUserUpdate={handleProfileUpdate}
           />
         ) : (
           <Login onLogin={handleLogin} onBack={() => setCurrentPage('home')} />

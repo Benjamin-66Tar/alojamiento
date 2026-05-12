@@ -4,6 +4,7 @@ import SearchBar from './SearchBar'
 import CategoryIcons from './CategoryIcons'
 import OfferSection from './OfferSection'
 import HotelCard from './HotelCard'
+import ServicesSection from './ServicesSection'
 import { generateGuestReservationPdf } from '../utils/pdfReport'
 
 // Datos de ejemplo de hoteles
@@ -129,7 +130,13 @@ function createReservationNumber() {
   return `RSV-${Date.now().toString().slice(-6)}`
 }
 
-export default function Home({ currentUser, onNavigateToDashboard, onLogout }) {
+export default function Home({
+  currentUser,
+  onNavigateToDashboard,
+  onNavigateToLogin,
+  onNavigateToProfile,
+  onLogout,
+}) {
   const [searchParams, setSearchParams] = useState({})
   const [selectedHotel, setSelectedHotel] = useState(null)
   const [reservation, setReservation] = useState(() => {
@@ -203,9 +210,19 @@ export default function Home({ currentUser, onNavigateToDashboard, onLogout }) {
             {currentUser && (
               <span className="nav-user">{currentUser.name}</span>
             )}
-            {(!currentUser || canSeeDashboard) && (
+            {!currentUser && (
+              <button className="nav-button" onClick={onNavigateToLogin}>
+                Iniciar sesion
+              </button>
+            )}
+            {currentUser && (
+              <button className="nav-ghost-button" onClick={onNavigateToProfile}>
+                Perfil
+              </button>
+            )}
+            {canSeeDashboard && (
               <button className="nav-button" onClick={onNavigateToDashboard}>
-                {currentUser ? 'Dashboard' : 'Iniciar sesion'}
+                Dashboard
               </button>
             )}
             {currentUser && (
@@ -222,6 +239,8 @@ export default function Home({ currentUser, onNavigateToDashboard, onLogout }) {
 
       {/* Sección de categorías */}
       <CategoryIcons />
+
+      <ServicesSection />
 
       {/* Sección de ofertas especiales */}
       <OfferSection />
