@@ -30,3 +30,5 @@ Thumbs.db
 .cache/
 .vite/
 coverage/
+uploads/
+*/uploads/

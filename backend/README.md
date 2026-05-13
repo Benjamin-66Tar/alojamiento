@@ -41,8 +41,22 @@ Prueba la conexion en:
 http://localhost:3001/api/health
 ```
 
+Swagger UI esta disponible en:
+
+```txt
+http://localhost:3001/api-docs
+```
+
+La especificacion OpenAPI en JSON esta disponible en:
+
+```txt
+http://localhost:3001/openapi.json
+```
+
 ## Rutas incluidas
 
 - `GET /api/health`: prueba la conexion con PostgreSQL.
 - `GET /api/services`: devuelve los servicios activos.
-- `POST /api/login`: busca un usuario por correo. Falta agregar validacion real de password con hash antes de usarlo en produccion.
+- `POST /api/login`: inicia sesion con correo y contrasena.
+- `POST /api/register`: registra un nuevo huesped.
+- `GET /api/profile/:id`: devuelve el perfil de un usuario.

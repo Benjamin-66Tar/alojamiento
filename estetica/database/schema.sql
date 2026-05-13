@@ -42,6 +42,15 @@ CREATE TABLE rooms (
   UNIQUE (hotel_id, room_number)
 );
 
+CREATE TABLE room_images (
+  id SERIAL PRIMARY KEY,
+  room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+  image_data BYTEA NOT NULL,
+  mime_type VARCHAR(80) NOT NULL,
+  file_name VARCHAR(180),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE services (
   id SERIAL PRIMARY KEY,
   name VARCHAR(120) NOT NULL UNIQUE,

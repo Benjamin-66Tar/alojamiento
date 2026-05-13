@@ -5,6 +5,7 @@ import StatsCards from './StatsCards'
 import RevenueChart from './RevenueChart'
 import RecentBookings from './RecentBookings'
 import HotelPerformance from './HotelPerformance'
+import AdminRooms from './AdminRooms'
 import { generateDashboardPdf } from '../utils/pdfReport'
 
 const roles = [
@@ -228,6 +229,10 @@ export default function Dashboard({ currentUser, onNavigateToHome, onLogout }) {
           </div>
         </section>
 
+        {!isGuest && !isOperational && (
+          <AdminRooms currentUser={currentUser} />
+        )}
+
         {!isGuest && <StatsCards period={selectedPeriod} />}
 
         <section className="module-grid">
@@ -253,7 +258,7 @@ export default function Dashboard({ currentUser, onNavigateToHome, onLogout }) {
         {!isGuest && (
           <div className="dashboard-grid">
             <div className="grid-col-1">
-              <RecentBookings />
+              <RecentBookings currentUser={currentUser} />
             </div>
           </div>
         )}

@@ -41,6 +41,20 @@
   border-collapse: collapse;
 }
 
+.booking-state {
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.booking-state.error {
+  color: var(--danger-color);
+  background: rgba(239, 68, 68, 0.08);
+}
+
 .table-header {
   display: grid;
   grid-template-columns: 1.5fr 2fr 1.5fr 1.2fr 1fr;

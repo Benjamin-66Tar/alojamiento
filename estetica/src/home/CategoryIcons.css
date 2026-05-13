@@ -16,12 +16,15 @@
 }
 
 .categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  display: flex;
   gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x proximity;
 }
 
 .category-card {
+  flex: 0 0 170px;
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -30,6 +33,7 @@
   transition: var(--transition);
   border: 2px solid var(--border-color);
   box-shadow: var(--shadow-sm);
+  scroll-snap-align: start;
 }
 
 .category-card:hover {
@@ -58,7 +62,7 @@
 
 @media (max-width: 768px) {
   .categories-grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
   }
 
   .categories-title {
@@ -67,6 +71,7 @@
   }
 
   .category-card {
+    flex-basis: 145px;
     padding: 16px;
   }
 

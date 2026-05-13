@@ -1,111 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Home.css'
 import SearchBar from './SearchBar'
 import CategoryIcons from './CategoryIcons'
 import OfferSection from './OfferSection'
 import HotelCard from './HotelCard'
 import ServicesSection from './ServicesSection'
-import { generateGuestReservationPdf } from '../utils/pdfReport'
-
-// Datos de ejemplo de hoteles
-const hotelData = [
-  {
-    id: 1,
-    name: 'Grand Plaza Hotel',
-    location: 'Madrid, España',
-    rating: 4.8,
-    reviews: 324,
-    price: 120,
-    originalPrice: 180,
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    amenities: ['WiFi', 'Gimnasio', 'Desayuno'],
-    featured: true,
-  },
-  {
-    id: 2,
-    name: 'Costa Azul Resort',
-    location: 'Barcelona, España',
-    rating: 4.7,
-    reviews: 512,
-    price: 95,
-    originalPrice: 150,
-    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    amenities: ['Piscina', 'Playa', 'Spa'],
-    featured: false,
-  },
-  {
-    id: 3,
-    name: 'Mountain View Lodge',
-    location: 'Asturias, España',
-    rating: 4.9,
-    reviews: 287,
-    price: 110,
-    originalPrice: null,
-    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    amenities: ['Senderismo', 'Restaurante', 'Chimenea'],
-    featured: true,
-  },
-  {
-    id: 4,
-    name: 'Urban Luxury Suites',
-    location: 'Valencia, España',
-    rating: 4.6,
-    reviews: 198,
-    price: 140,
-    originalPrice: 200,
-    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    amenities: ['Rooftop Bar', 'Concierge', '5 Estrellas'],
-    featured: false,
-  },
-  {
-    id: 5,
-    name: 'Tropical Paradise Resort',
-    location: 'Islas Canarias, España',
-    rating: 4.8,
-    reviews: 456,
-    price: 130,
-    originalPrice: 195,
-    gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-    amenities: ['Playa Privada', 'All-Inclusive', 'Entretenimiento'],
-    featured: false,
-  },
-  {
-    id: 6,
-    name: 'Historic City Palace',
-    location: 'Sevilla, España',
-    rating: 4.7,
-    reviews: 323,
-    price: 105,
-    originalPrice: 160,
-    gradient: 'linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)',
-    amenities: ['Patrimonio', 'Tour', 'Gastronomía'],
-    featured: false,
-  },
-  {
-    id: 7,
-    name: 'Countryside Retreat',
-    location: 'Toledo, España',
-    rating: 4.5,
-    reviews: 167,
-    price: 85,
-    originalPrice: 120,
-    gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-    amenities: ['Paisajes', 'Tranquilidad', 'Spa'],
-    featured: false,
-  },
-  {
-    id: 8,
-    name: 'Modern City Center Hotel',
-    location: 'Bilbao, España',
-    rating: 4.6,
-    reviews: 289,
-    price: 125,
-    originalPrice: 175,
-    gradient: 'linear-gradient(135deg, #a6c0fe 0%, #f68084 100%)',
-    amenities: ['Centro Urbano', 'Negocios', 'Arte'],
-    featured: false,
-  },
-]
+import { createReservation, downloadReservationPdf, getPublicRooms } from '../api/client'
 
 const reservationTypes = ['Flexible', 'No reembolsable', 'Ejecutiva', 'Familiar']
 
@@ -126,10 +26,6 @@ function calculateNights(startDate, endDate) {
   return Math.max(1, Math.ceil(diff / 86400000))
 }
 
-function createReservationNumber() {
-  return `RSV-${Date.now().toString().slice(-6)}`
-}
-
 export default function Home({
   currentUser,
   onNavigateToDashboard,
@@ -138,7 +34,11 @@ export default function Home({
   onLogout,
 }) {
   const [searchParams, setSearchParams] = useState({})
+  const [rooms, setRooms] = useState([])
+  const [roomsStatus, setRoomsStatus] = useState('loading')
+  const [roomsError, setRoomsError] = useState('')
   const [selectedHotel, setSelectedHotel] = useState(null)
+  const [reservationStatus, setReservationStatus] = useState('')
   const [reservation, setReservation] = useState(() => {
     const today = new Date()
     return {
@@ -150,6 +50,26 @@ export default function Home({
   })
   const canSeeDashboard = ['super-admin', 'gerente'].includes(currentUser?.roleId)
 
+  useEffect(() => {
+    let active = true
+
+    getPublicRooms()
+      .then((data) => {
+        if (!active) return
+        setRooms(data)
+        setRoomsStatus('ready')
+      })
+      .catch((error) => {
+        if (!active) return
+        setRoomsError(error.message)
+        setRoomsStatus('error')
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   const handleSearch = (params) => {
     setSearchParams(params)
     setReservation((currentReservation) => ({
@@ -157,7 +77,6 @@ export default function Home({
       checkIn: params.checkIn || currentReservation.checkIn,
       checkOut: params.checkOut || currentReservation.checkOut,
     }))
-    console.log('Búsqueda realizada:', params)
   }
 
   const handleOpenReservation = (hotel) => {
@@ -170,37 +89,60 @@ export default function Home({
     }))
   }
 
-  const handleConfirmReservation = (event) => {
+  const handleConfirmReservation = async (event) => {
     event.preventDefault()
 
     if (!selectedHotel) return
 
     const nights = calculateNights(reservation.checkIn, reservation.checkOut)
     const amountPaid = nights * selectedHotel.price
-    const reservationNumber = createReservationNumber()
 
-    generateGuestReservationPdf({
-      guestName: reservation.guestName,
-      reservationNumber,
-      checkIn: reservation.checkIn,
-      checkOut: reservation.checkOut,
-      amountPaid,
-      reservationType: reservation.reservationType,
-      hotelName: selectedHotel.name,
-      nights,
-    })
+    try {
+      setReservationStatus('Guardando reservacion en la base de datos...')
+      const savedReservation = await createReservation({
+        guestId: currentUser?.id,
+        guestName: reservation.guestName,
+        roomId: selectedHotel.roomId || selectedHotel.id,
+        checkIn: reservation.checkIn,
+        checkOut: reservation.checkOut,
+        guestsCount: searchParams.guests || 1,
+        reservationType: reservation.reservationType,
+        totalAmount: amountPaid,
+        paidAmount: amountPaid,
+      })
 
-    setSelectedHotel(null)
+      setReservationStatus('Generando PDF desde la API...')
+      await downloadReservationPdf({
+        guestName: savedReservation.guestName,
+        reservationNumber: savedReservation.reservationNumber,
+        checkIn: savedReservation.checkIn,
+        checkOut: savedReservation.checkOut,
+        amountPaid: savedReservation.amountPaid,
+        reservationType: savedReservation.reservationType,
+        hotelName: savedReservation.hotelName,
+        nights,
+      })
+
+      setReservationStatus('')
+      setSelectedHotel(null)
+    } catch (error) {
+      setReservationStatus(error.message)
+    }
   }
+
+  const filteredRooms = rooms.filter((hotel) =>
+    !searchParams.location ||
+    hotel.location.toLowerCase().includes(searchParams.location.toLowerCase()) ||
+    hotel.name.toLowerCase().includes(searchParams.location.toLowerCase())
+  )
 
   return (
     <div className="home">
-      {/* Header con navegación */}
       <header className="header">
         <div className="header-content">
           <div className="logo">
-            <span className="logo-icon">🏨</span>
-            <span className="logo-text">Estética Hoteles</span>
+            <span className="logo-icon">Hotel</span>
+            <span className="logo-text">Estetica Hoteles</span>
           </div>
           <nav className="nav">
             <a href="#" className="nav-link">Inicio</a>
@@ -234,35 +176,31 @@ export default function Home({
         </div>
       </header>
 
-      {/* Sección de búsqueda */}
       <SearchBar onSearch={handleSearch} />
-
-      {/* Sección de categorías */}
       <CategoryIcons />
-
       <ServicesSection />
-
-      {/* Sección de ofertas especiales */}
       <OfferSection />
 
-      {/* Sección de hoteles disponibles */}
       <section className="hotels-section">
         <div className="hotels-container">
           <div className="section-header">
-            <h2 className="section-title">Hoteles Disponibles</h2>
-            <p className="section-subtitle">Descubre nuestras mejores opciones</p>
+            <h2 className="section-title">Habitaciones Disponibles</h2>
+            <p className="section-subtitle">Habitaciones cargadas desde PostgreSQL</p>
           </div>
 
           <div className="hotels-grid">
-            {hotelData
-              .filter((hotel) =>
-                !searchParams.location ||
-                hotel.location.toLowerCase().includes(searchParams.location.toLowerCase()) ||
-                hotel.name.toLowerCase().includes(searchParams.location.toLowerCase())
-              )
-              .map((hotel) => (
-                <HotelCard key={hotel.id} hotel={hotel} onBook={handleOpenReservation} />
-              ))}
+            {roomsStatus === 'loading' && (
+              <div className="rooms-feedback">Cargando habitaciones desde la base de datos...</div>
+            )}
+            {roomsStatus === 'error' && (
+              <div className="rooms-feedback error">{roomsError}</div>
+            )}
+            {roomsStatus === 'ready' && rooms.length === 0 && (
+              <div className="rooms-feedback">No hay habitaciones registradas todavia.</div>
+            )}
+            {filteredRooms.map((hotel) => (
+              <HotelCard key={hotel.id} hotel={hotel} onBook={handleOpenReservation} />
+            ))}
           </div>
         </div>
       </section>
@@ -331,6 +269,10 @@ export default function Home({
               </strong>
             </div>
 
+            {reservationStatus && (
+              <p className="reservation-message">{reservationStatus}</p>
+            )}
+
             <button type="submit" className="reservation-submit">
               Confirmar y generar PDF
             </button>
@@ -338,7 +280,6 @@ export default function Home({
         </div>
       )}
 
-      {/* Footer */}
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-section">
@@ -346,21 +287,21 @@ export default function Home({
             <p>Tu plataforma de confianza para reservar los mejores hoteles al mejor precio.</p>
           </div>
           <div className="footer-section">
-            <h4>Información</h4>
+            <h4>Informacion</h4>
             <ul>
               <li><a href="#">Preguntas Frecuentes</a></li>
-              <li><a href="#">Política de Privacidad</a></li>
-              <li><a href="#">Términos de Servicio</a></li>
+              <li><a href="#">Politica de Privacidad</a></li>
+              <li><a href="#">Terminos de Servicio</a></li>
             </ul>
           </div>
           <div className="footer-section">
             <h4>Contacto</h4>
-            <p>📧 info@esteticahoteles.com</p>
-            <p>📞 +34 900 123 456</p>
+            <p>info@esteticahoteles.com</p>
+            <p>+34 900 123 456</p>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2024 Estética Hoteles. Todos los derechos reservados.</p>
+          <p>&copy; 2024 Estetica Hoteles. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

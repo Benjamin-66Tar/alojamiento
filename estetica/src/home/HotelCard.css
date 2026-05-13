@@ -30,6 +30,12 @@
   justify-content: center;
 }
 
+.hotel-room-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .hotel-card:hover .hotel-image-container {
   filter: brightness(1.1);
 }
@@ -56,6 +62,18 @@
   color: white;
   left: 12px;
   right: auto;
+}
+
+.room-number-badge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(31, 41, 55, 0.86);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .hotel-content {
