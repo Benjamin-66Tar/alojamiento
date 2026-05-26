@@ -6,7 +6,10 @@ export default function HotelCard({ hotel, onBook }) {
   const {
     gradient,
     name,
+    hotelName,
     location,
+    address,
+    description,
     rating,
     reviews,
     price,
@@ -38,7 +41,9 @@ export default function HotelCard({ hotel, onBook }) {
           </div>
         </div>
 
-        <p className="hotel-location">{location}</p>
+        {hotelName && <p className="hotel-brand">{hotelName}</p>}
+        <p className="hotel-location">{address || location}</p>
+        <p className="hotel-description">{description}</p>
 
         <div className="hotel-amenities">
           {amenities?.slice(0, 3).map((amenity) => (

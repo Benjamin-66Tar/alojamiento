@@ -89,6 +89,7 @@ async function getRoomsWithImages() {
       hotels.name AS hotel_name,
       hotels.location AS hotel_location,
       room_types.name AS room_type,
+      room_types.description,
       room_types.capacity,
       room_types.price_per_night
     FROM rooms
@@ -469,13 +470,14 @@ app.post('/api/admin/rooms', async (req, res) => {
     hotelName,
     hotelLocation,
     roomTypeName,
+    description,
     capacity,
     pricePerNight,
     roomNumber,
     status,
   } = req.body
 
-  if (!hotelName || !hotelLocation || !roomTypeName || !capacity || !pricePerNight || !roomNumber) {
+  if (!hotelName || !hotelLocation || !roomTypeName || !description || !capacity || !pricePerNight || !roomNumber) {
     res.status(400).json({ message: 'Faltan datos obligatorios de la habitacion.' })
     return
   }
@@ -508,15 +510,15 @@ app.post('/api/admin/rooms', async (req, res) => {
 
     if (roomTypeResult.rowCount === 0) {
       roomTypeResult = await client.query(
-        `INSERT INTO room_types (hotel_id, name, capacity, price_per_night)
-        VALUES ($1, $2, $3, $4)
+        `INSERT INTO room_types (hotel_id, name, description, capacity, price_per_night)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING id`,
-        [hotelId, roomTypeName, Number(capacity), Number(pricePerNight)]
+        [hotelId, roomTypeName, description, Number(capacity), Number(pricePerNight)]
       )
     } else {
       await client.query(
-        'UPDATE room_types SET capacity = $1, price_per_night = $2 WHERE id = $3',
-        [Number(capacity), Number(pricePerNight), roomTypeResult.rows[0].id]
+        'UPDATE room_types SET description = $1, capacity = $2, price_per_night = $3 WHERE id = $4',
+        [description, Number(capacity), Number(pricePerNight), roomTypeResult.rows[0].id]
       )
     }
 
@@ -553,13 +555,14 @@ app.put('/api/admin/rooms/:id', async (req, res) => {
     hotelName,
     hotelLocation,
     roomTypeName,
+    description,
     capacity,
     pricePerNight,
     roomNumber,
     status,
   } = req.body
 
-  if (!hotelName || !hotelLocation || !roomTypeName || !capacity || !pricePerNight || !roomNumber) {
+  if (!hotelName || !hotelLocation || !roomTypeName || !description || !capacity || !pricePerNight || !roomNumber) {
     res.status(400).json({ message: 'Faltan datos obligatorios de la habitacion.' })
     return
   }
@@ -592,15 +595,15 @@ app.put('/api/admin/rooms/:id', async (req, res) => {
 
     if (roomTypeResult.rowCount === 0) {
       roomTypeResult = await client.query(
-        `INSERT INTO room_types (hotel_id, name, capacity, price_per_night)
-        VALUES ($1, $2, $3, $4)
+        `INSERT INTO room_types (hotel_id, name, description, capacity, price_per_night)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING id`,
-        [hotelId, roomTypeName, Number(capacity), Number(pricePerNight)]
+        [hotelId, roomTypeName, description, Number(capacity), Number(pricePerNight)]
       )
     } else {
       await client.query(
-        'UPDATE room_types SET capacity = $1, price_per_night = $2 WHERE id = $3',
-        [Number(capacity), Number(pricePerNight), roomTypeResult.rows[0].id]
+        'UPDATE room_types SET description = $1, capacity = $2, price_per_night = $3 WHERE id = $4',
+        [description, Number(capacity), Number(pricePerNight), roomTypeResult.rows[0].id]
       )
     }
 

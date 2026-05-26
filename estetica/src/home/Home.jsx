@@ -184,8 +184,8 @@ export default function Home({
       <section className="hotels-section">
         <div className="hotels-container">
           <div className="section-header">
-            <h2 className="section-title">Habitaciones Disponibles</h2>
-            <p className="section-subtitle">Habitaciones cargadas desde PostgreSQL</p>
+            <h2 className="section-title">Catalogo de habitaciones</h2>
+            <p className="section-subtitle">Nombre, precio, direccion y descripcion desde PostgreSQL</p>
           </div>
 
           <div className="hotels-grid">
@@ -211,7 +211,7 @@ export default function Home({
             <div className="reservation-heading">
               <div>
                 <p className="reservation-eyebrow">Confirmar reservacion</p>
-                <h2 id="reservation-title">{selectedHotel.name}</h2>
+                <h2 id="reservation-title">{selectedHotel.hotelName} - {selectedHotel.name}</h2>
               </div>
               <button type="button" className="modal-close" onClick={() => setSelectedHotel(null)}>
                 Cerrar

@@ -63,7 +63,8 @@
 }
 
 .room-form input,
-.room-form select {
+.room-form select,
+.room-form textarea {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   background: var(--bg-secondary);
@@ -71,6 +72,15 @@
   font: inherit;
   font-size: 13px;
   padding: 10px;
+}
+
+.room-form textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.room-form-wide {
+  grid-column: span 2;
 }
 
 .admin-room-message,
@@ -161,5 +171,9 @@
 @media (max-width: 720px) {
   .admin-rooms-header {
     flex-direction: column;
+  }
+
+  .room-form-wide {
+    grid-column: span 1;
   }
 }

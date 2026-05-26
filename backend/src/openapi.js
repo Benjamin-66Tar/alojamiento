@@ -638,11 +638,15 @@ export const openApiSpec = {
       },
       CreateRoomRequest: {
         type: 'object',
-        required: ['hotelName', 'hotelLocation', 'roomTypeName', 'capacity', 'pricePerNight', 'roomNumber'],
+        required: ['hotelName', 'hotelLocation', 'roomTypeName', 'description', 'capacity', 'pricePerNight', 'roomNumber'],
         properties: {
           hotelName: { type: 'string', example: 'Hotel' },
-          hotelLocation: { type: 'string', example: 'Ciudad principal' },
+          hotelLocation: { type: 'string', example: 'Av. Principal 123, Ciudad principal' },
           roomTypeName: { type: 'string', example: 'Deluxe' },
+          description: {
+            type: 'string',
+            example: 'Habitacion amplia con cama king, escritorio y vista a la ciudad.',
+          },
           capacity: { type: 'integer', example: 2 },
           pricePerNight: { type: 'number', example: 120 },
           roomNumber: { type: 'string', example: '101' },
@@ -667,8 +671,12 @@ export const openApiSpec = {
           room_number: { type: 'string', example: '101' },
           status: { type: 'string', example: 'available' },
           hotel_name: { type: 'string', example: 'Hotel' },
-          hotel_location: { type: 'string', example: 'Ciudad principal' },
+          hotel_location: { type: 'string', example: 'Av. Principal 123, Ciudad principal' },
           room_type: { type: 'string', example: 'Deluxe' },
+          description: {
+            type: 'string',
+            example: 'Habitacion amplia con cama king, escritorio y vista a la ciudad.',
+          },
           capacity: { type: 'integer', example: 2 },
           price_per_night: { type: 'string', example: '120.00' },
           images: {

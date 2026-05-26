@@ -14,6 +14,7 @@ const initialForm = {
   hotelName: 'Hotel',
   hotelLocation: 'Ciudad principal',
   roomTypeName: 'Deluxe',
+  description: 'Habitacion amplia con amenidades para una estancia comoda.',
   capacity: '2',
   pricePerNight: '120',
   roomNumber: '',
@@ -103,6 +104,7 @@ export default function AdminRooms({ currentUser }) {
       hotelName: room.hotel_name,
       hotelLocation: room.hotel_location,
       roomTypeName: room.room_type,
+      description: room.description || '',
       capacity: String(room.capacity),
       pricePerNight: String(room.price_per_night),
       roomNumber: room.room_number,
@@ -172,7 +174,7 @@ export default function AdminRooms({ currentUser }) {
           />
         </label>
         <label>
-          Ubicacion
+          Direccion
           <input
             type="text"
             value={form.hotelLocation}
@@ -181,11 +183,19 @@ export default function AdminRooms({ currentUser }) {
           />
         </label>
         <label>
-          Tipo
+          Nombre
           <input
             type="text"
             value={form.roomTypeName}
             onChange={(event) => updateField('roomTypeName', event.target.value)}
+            required
+          />
+        </label>
+        <label className="room-form-wide">
+          Descripcion
+          <textarea
+            value={form.description}
+            onChange={(event) => updateField('description', event.target.value)}
             required
           />
         </label>
@@ -200,7 +210,7 @@ export default function AdminRooms({ currentUser }) {
           />
         </label>
         <label>
-          Precio por noche
+          Precio
           <input
             type="number"
             min="1"
@@ -251,6 +261,7 @@ export default function AdminRooms({ currentUser }) {
               <h3>Habitacion {room.room_number}</h3>
               <p>{room.hotel_name} - {room.hotel_location}</p>
               <p>{room.room_type} para {room.capacity} huespedes - ${Number(room.price_per_night).toFixed(2)}</p>
+              {room.description && <p>{room.description}</p>}
             </div>
 
             <div className="room-images">

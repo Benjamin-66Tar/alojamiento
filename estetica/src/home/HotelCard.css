@@ -124,6 +124,25 @@
   margin: 0 0 8px 0;
 }
 
+.hotel-brand {
+  font-size: 12px;
+  color: var(--primary-color);
+  font-weight: 800;
+  margin: 0 0 4px;
+}
+
+.hotel-description {
+  color: var(--text-secondary);
+  display: -webkit-box;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 8px;
+  min-height: 38px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .hotel-amenities {
   display: flex;
   flex-wrap: wrap;

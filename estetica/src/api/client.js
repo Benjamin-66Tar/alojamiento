@@ -16,8 +16,11 @@ function normalizeRoom(room) {
   return {
     id: room.id,
     roomId: room.id,
-    name: `${room.hotel_name} - Habitacion ${room.room_number}`,
+    name: room.room_type,
+    hotelName: room.hotel_name,
+    address: room.hotel_location,
     location: room.hotel_location,
+    description: room.description || 'Habitacion disponible para reservar.',
     rating: 4.8,
     reviews: 0,
     price: Number(room.price_per_night),
