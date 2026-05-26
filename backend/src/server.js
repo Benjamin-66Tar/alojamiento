@@ -72,6 +72,7 @@ async function ensureRoomImagesTable() {
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )`
   )
+  await pool.query('ALTER TABLE room_images ADD COLUMN IF NOT EXISTS image_url TEXT')
   await pool.query('ALTER TABLE room_images ADD COLUMN IF NOT EXISTS image_data BYTEA')
   await pool.query('ALTER TABLE room_images ADD COLUMN IF NOT EXISTS mime_type VARCHAR(80)')
   await pool.query('ALTER TABLE room_images ADD COLUMN IF NOT EXISTS file_name VARCHAR(180)')

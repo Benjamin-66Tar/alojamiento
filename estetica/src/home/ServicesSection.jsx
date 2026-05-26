@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './ServicesSection.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:3001' : '')
 
 export default function ServicesSection() {
   const [services, setServices] = useState([])
